@@ -4,7 +4,7 @@ from model import *
 import numpy as np
 
 
-model = CTOModel(24, 12, 5, 50, 50)
+model = CTOModel(24, 12, 5, 10, 10)
 for i in range(30):
     model.step()
     if (i % 5 == 0):
@@ -12,5 +12,8 @@ for i in range(30):
             #under_observation = []
             if ('o_' in agent.unique_id):
                 print (agent.unique_id)
-                print (agent.under_observation)
+                print ("observando")
+                for target in  agent.under_observation:
+                    print (target.unique_id)
+                print ("--------------")
 

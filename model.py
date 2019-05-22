@@ -79,7 +79,7 @@ class CTOModel(Model):
             self.grid.place_agent(b, (x, y))
 
         self.datacollector = DataCollector(
-            agent_reporters={"Wealth": "under_observation"})  # An agent attribute
+            agent_reporters={"Observation": "under_observation"})  
 
     def step(self):
         self.schedule.step()
