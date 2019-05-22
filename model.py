@@ -45,7 +45,7 @@ class ObserverAgent(Agent):
                     self.sensor_range,
                     include_center=True)
         #print (in_fov)
-        return in_fov
+        return self.model.grid.get_cell_list_contents(in_fov)
         
 
 class CTOModel(Model):
