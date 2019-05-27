@@ -1,7 +1,7 @@
 # model.py
 from mesa import Agent, Model
 from mesa.time import RandomActivation
-from mesa.space import MultiGrid
+from mesa.space import Grid
 from mesa.datacollection import DataCollector
 from random import uniform
 import math
@@ -87,11 +87,22 @@ class ObserverAgent(Agent):
     def check_fov(self):
         in_fov = self.model.grid.get_neighborhood(
                     self.pos,
-                    self.sensor_range,
-                    include_center=True)
+                    True,
+                    True,
+                    self.sensor_range)
         #print (in_fov)
         return self.model.grid.get_cell_list_contents(in_fov)
-        
+
+def verify_observation(model):
+    global_observation = set ([])
+    for agent in model.schedule.agents:
+        if ('o_' in agent.unique_id):
+            for target in agent.under_observation:
+                if ('t_' in target.unique_id):
+                    #print (target.unique_id)
+                    global_observation.add(target.unique_id)
+    
+    return len(global_observation)
 
 class CTOModel(Model):
     """A model with some number of agents."""
@@ -100,7 +111,7 @@ class CTOModel(Model):
         self.num_agents = N
         self.num_observer_agents = O
         self.sensor_range  = sensorRange
-        self.grid = MultiGrid(width, height, True)
+        self.grid = Grid(width, height, False)
         self.schedule = RandomActivation(self)
 
         # Create targets
