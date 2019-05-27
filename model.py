@@ -3,22 +3,67 @@ from mesa import Agent, Model
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
+from random import uniform
+import math
 
 class TargetAgent(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.under_observation = []
+        self.destination = None
 
     def step(self):
         self.move()
     
     def move(self):
-        possible_steps = self.model.grid.get_neighborhood(
-            self.pos,
-            moore=True,
-            include_center=False)
-        new_position = self.random.choice(possible_steps)
+        if (self.destination is None or self.pos == self.destination):
+            self.destination = self.new_destination()
+        new_position = self.trace_next_move()
         self.model.grid.move_agent(self, new_position)
+
+# Cada alvo calcula o próximo destino, a partir da posição atual (x,y) 
+    def new_destination(self):
+        x, y = self.pos
+        new_x = x + uniform(-25, 25)#Ele gera dois números aleatórios no intervalo [-25,+25]
+        new_y = y + uniform(-25, 25)#Ele gera dois números aleatórios no intervalo [-25,+25]
+#       desde que não caia fora do "cercado"
+        while (new_x > self.model.grid.width or new_x < 0):
+            new_x = x + uniform(-25, 25)
+ 
+        while (new_y > self.model.grid.height or new_y < 0):
+            new_y = y + uniform(-25, 25)
+
+        return (math.floor(new_x), math.floor(new_y))
+
+    def trace_next_move(self):
+        x_pos, y_pos = self.pos
+        x_dest, y_dest = self.destination
+        if (x_dest > x_pos):
+            x = x_pos + 1
+            if (y_dest > y_pos):
+                y = y_pos + 1
+            elif (y_dest < y_pos):
+                y = y_pos - 1
+            else:
+                y = y_pos
+        elif (x_dest < x_pos):
+            x = x_pos - 1
+            if (y_dest > y_pos):
+                y = y_pos + 1
+            elif (y_dest < y_pos):
+                y = y_pos - 1
+            else:
+                y = y_pos
+        else:
+            x = x_pos
+            if (y_dest > y_pos):
+                y = y_pos + 1
+            elif (y_dest < y_pos):
+                y = y_pos - 1
+            else:
+                y = y_pos
+        return (x ,y)
+
 
 class ObserverAgent(Agent):
     def __init__(self, unique_id, sensor_range, model):
