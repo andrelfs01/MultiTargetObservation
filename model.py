@@ -91,6 +91,7 @@ class ObserverAgent(Agent):
             self.model.grid.move_agent(self, new_position)
         ## verify field of view
         self.under_observation = self.check_fov()
+        
 
 
     def check_fov(self):
@@ -177,7 +178,9 @@ class CTOModel(Model):
         self.multiplication_factor = 1.0/target_speed 
         self.sensor_range  = sensorRange * self.multiplication_factor
                 
-        self.grid = Grid(int(width * self.multiplication_factor), int(height * self.multiplication_factor), False)
+        #modificação para diminuir demora na execução
+        #self.grid = Grid(int(width * self.multiplication_factor), int(height * self.multiplication_factor), False)
+        self.grid = Grid(int(width), int(height), False)
         self.schedule = RandomActivation(self)
         self.observers_indications = []
         self.a = a
@@ -212,10 +215,12 @@ class CTOModel(Model):
         if ((self.schedule.steps % 10) == 0):
                 #print ("running kmeans...")
                 if(not self.active_prediction):
+                    print("kmeans")
                     self.observers_indications = self.kmeans_indications()
                 else:
                     self.observers_indications = self.kmeans_predicted_indications()
         self.schedule.step()
+        #print("step")
         self.datacollector.collect(self)
         
     def kmeans_indications(self):
