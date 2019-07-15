@@ -40,27 +40,41 @@ class TargetAgent(Agent):
 
         return (math.floor(new_x), math.floor(new_y))
 
+
+    #funcao que define o movimento em um passo, de acordo com o destino do agente.
     def trace_next_move(self):
+        #posicao atual
         x_pos, y_pos = self.pos
+        #destino do agente
         x_dest, y_dest = self.destination
+        
+        #se o X do destino é maior que o X atual, incrementa o X para o movimento desse passo
         if (x_dest > x_pos):
             x = x_pos + 1
+            #mesmo procedimento, agora aplicado ao Y
+            #se o Y do destino é maior que o Y atual, incrementa o Y para o movimetno nesse passo
             if (y_dest > y_pos):
                 y = y_pos + 1
+            #se o Y do destino é menor que o Y atual, decrementa o Y para o movimento desse passo
             elif (y_dest < y_pos):
                 y = y_pos - 1
+            #senão, o Y do destino é igual o Y atual, não altera o Y para o movimento desse passo
             else:
                 y = y_pos
+        #se o X do destino é menor que o X atual, decrementa o X para o movimento desse passo
         elif (x_dest < x_pos):
             x = x_pos - 1
+            #mesmo procedimento, agora aplicado ao Y
             if (y_dest > y_pos):
                 y = y_pos + 1
             elif (y_dest < y_pos):
                 y = y_pos - 1
             else:
                 y = y_pos
+        #senão, o X do destino é igual o X atual, não altera o X para o movimento desse passo
         else:
             x = x_pos
+            #mesmo procedimento, agora aplicado ao Y
             if (y_dest > y_pos):
                 y = y_pos + 1
             elif (y_dest < y_pos):
@@ -88,6 +102,7 @@ class ObserverAgent(Agent):
     def move(self):
         for i in range(0, int(self.multiplication_factor)):
             new_position = self.trace_next_move()
+            #print(self.pos, new_position, self.destination)
             self.model.grid.move_agent(self, new_position)
         ## verify field of view
         self.under_observation = self.check_fov()
@@ -176,7 +191,7 @@ class CTOModel(Model):
         self.num_observer_agents = O
         self.target_speed = target_speed 
         self.multiplication_factor = 1.0/target_speed 
-        self.sensor_range  = sensorRange * self.multiplication_factor
+        self.sensor_range  = sensorRange # * self.multiplication_factor
                 
         #modificação para diminuir demora na execução
         #self.grid = Grid(int(width * self.multiplication_factor), int(height * self.multiplication_factor), False)
@@ -215,7 +230,7 @@ class CTOModel(Model):
         if ((self.schedule.steps % 10) == 0):
                 #print ("running kmeans...")
                 if(not self.active_prediction):
-                    print("kmeans")
+                    #print("kmeans")
                     self.observers_indications = self.kmeans_indications()
                 else:
                     self.observers_indications = self.kmeans_predicted_indications()
@@ -257,6 +272,15 @@ class CTOModel(Model):
                     old_x, old_y = agent.old_position
                 x_predicted = x + self.a * (x - old_x)
                 y_predicted = y + self.a * (y - old_y)
+                if (x_predicted < 0):
+                    x_predicted = 0
+                if (x_predicted >= self.grid.width):
+                    x_predicted = self.grid.width - 1
+                if (y_predicted < 0):
+                    y_predicted = 0
+                if (y_predicted >= self.grid.height):
+                    y_predicted = self.grid.height -1
+
                 y_list.append(y_predicted)
                 x_list.append(x_predicted)
         Data = {'x': x_list,
