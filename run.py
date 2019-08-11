@@ -8,14 +8,14 @@ import numpy as np
 from mesa.batchrunner import BatchRunner
 
 run_iterations = 5
-run_max_steps = 120
+run_max_steps = 1500
 
 #variando o sensor range: ~03:18 minutos
 fixed_params = {"width": 150,
                 "height": 150,
                 "N": 24,
                 "O": 12,
-                "target_speed": 0.5,
+                "target_speed": 0.1,
                 "active_prediction": False,
                 "a" : 1.0
                 }
@@ -110,6 +110,7 @@ plt.savefig('media_observacao_kmeans_predicao_variando_sensor.png')
 plt.clf()
 
 #variando o speed: 
+
 fixed_params = {"width": 150,
                 "height": 150,
                 "N": 24,

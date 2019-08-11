@@ -100,7 +100,9 @@ class ObserverAgent(Agent):
             self.move()
     
     def move(self):
+        print(self.multiplication_factor)
         for i in range(0, int(self.multiplication_factor)):
+            
             new_position = self.trace_next_move()
             #print(self.pos, new_position, self.destination)
             self.model.grid.move_agent(self, new_position)
@@ -174,13 +176,16 @@ class ObserverAgent(Agent):
 #verify number of targets under all observer's fov
 def verify_observation(model):
     global_observation = set ([])
+    #lista de todos agentes
     for agent in model.schedule.agents:
+        #filtra apenas observadores
         if ('o_' in agent.unique_id):
+            #percorre a lsita de under_observation
             for target in agent.under_observation:
                 if ('t_' in target.unique_id):
                     #print (target.unique_id)
                     global_observation.add(target.unique_id)
-    
+    print (len(global_observation))
     return len(global_observation)
 
 class CTOModel(Model):
