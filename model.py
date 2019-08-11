@@ -8,6 +8,7 @@ import math
 from pandas import DataFrame
 from sklearn.cluster import KMeans
 import numpy as np
+import time
 
 class TargetAgent(Agent):
     def __init__(self, unique_id, model):
@@ -115,7 +116,12 @@ class ObserverAgent(Agent):
                     True,
                     True,
                     int(self.sensor_range))
-        #print (in_fov)
+        print ('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        print (self.pos)
+        print (in_fov)
+        print (self.model.grid.get_cell_list_contents(in_fov))
+        time.sleep(5)
+        print ('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
         return self.model.grid.get_cell_list_contents(in_fov)
     
     #verify indication closer to observer  
