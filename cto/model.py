@@ -89,7 +89,7 @@ class Modelo(Model):
                 else:
                     self.observers_indications = self.kmeans_predicted_indications()
         self.schedule.step()
-        # print("step")
+        print(self.schedule.get_agent_count)
         self.datacollector.collect(self)
 
     def kmeans_indications(self):
@@ -97,10 +97,12 @@ class Modelo(Model):
         y_list = []
         for a in self.grid.coord_iter():
             agent, x, y = a
-            print (agent)
+            
             if (len(agent) != 0):
                 for ag in agent:
+                    
                     if ('t_' in ag.unique_id):
+                        print (ag.unique_id)
                         y_list.append(y)
                         x_list.append(x)
         Data = {'x': x_list,

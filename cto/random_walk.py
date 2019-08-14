@@ -30,6 +30,7 @@ class RandomWalker(Agent):
         super().__init__(unique_id, model)
         self.pos = pos
         self.moore = moore
+        self.model = model
 
     def random_move(self):
         '''

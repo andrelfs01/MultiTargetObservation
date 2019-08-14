@@ -1,8 +1,10 @@
 from mesa import Agent
-from cto.random_walk import RandomWalker
+from mesa import Model
+from mesa.time import RandomActivation
+#from cto.random_walk import RandomWalker
 
 
-class TargetAgent(RandomWalker):
+class TargetAgent(Agent):
     '''
     A sheep that walks around, reproduces (asexually) and gets eaten.
 
@@ -10,10 +12,17 @@ class TargetAgent(RandomWalker):
     '''
 
     energy = None
+    under_observation = []
+    pos = (1,1)
+    unique_id = 't_'
 
     def __init__(self, unique_id, pos, model, moore, energy=None):
-        super().__init__(unique_id, pos, model, moore=moore)
+        super().__init__(unique_id, model)
         self.energy = energy
+        self.under_observation = []
+        self.unique_id = unique_id
+        self.model = model
+        self.moore = moore
 
     def step(self):
         '''
@@ -22,45 +31,40 @@ class TargetAgent(RandomWalker):
         self.random_move()
         living = True
 
-        if self.model.grass:
-            # Reduce energy
-            self.energy -= 1
-
-            # If there is grass available, eat it
-            this_cell = self.model.grid.get_cell_list_contents([self.pos])
-            grass_patch = [obj for obj in this_cell
-                           if isinstance(obj, GrassPatch)][0]
-            if grass_patch.fully_grown:
-                self.energy += self.model.sheep_gain_from_food
-                grass_patch.fully_grown = False
-
-            # Death
-            if self.energy < 0:
-                self.model.grid._remove_agent(self.pos, self)
-                self.model.schedule.remove(self)
-                living = False
-
-        if living and self.random.random() < self.model.sheep_reproduce:
-            # Create a new sheep:
-            if self.model.grass:
-                self.energy /= 2
-            lamb = Sheep(self.model.next_id(), self.pos, self.model,
-                         self.moore, self.energy)
-            self.model.grid.place_agent(lamb, self.pos)
-            self.model.schedule.add(lamb)
+    def random_move(self):
+        '''
+        Step one cell in any allowable direction.
+        '''
+        # Pick the next cell from the adjacent cells.
+        next_moves = self.model.grid.get_neighborhood(self.pos, self.moore, True)
+        next_move = self.random.choice(next_moves)
+        # Now move:
+        self.model.grid.move_agent(self, next_move)
 
 
-class ObserverAgent(RandomWalker):
+class ObserverAgent(Agent):
     '''
     A wolf that walks around, reproduces (asexually) and eats sheep.
     '''
 
+    m = Model()
+    m.schedule = RandomActivation(m)
+
     energy = None
+    under_observation = []
+    pos = (1,1)
+    unique_id = 'o_'
+    model = m
 
     def __init__(self, unique_id, pos, model, moore, energy=None):
-        super().__init__(unique_id, pos, model, moore=moore)
+        super().__init__(unique_id, model)
         self.energy = energy
-
+        self.pos = pos
+        self.under_observation = []
+        self.unique_id = unique_id
+        self.model = model
+        self.moore = moore
+        
     def step(self):
         self.random_move()
         #self.energy -= 1
@@ -71,50 +75,22 @@ class ObserverAgent(RandomWalker):
         sheep = [obj for obj in this_cell if isinstance(obj, TargetAgent)]
         if len(sheep) > 0:
             sheep_to_eat = self.random.choice(sheep)
-            #self.energy += self.model.wolf_gain_from_food
-
-            # Kill the sheep
-            self.model.grid._remove_agent(self.pos, sheep_to_eat)
-            self.model.schedule.remove(sheep_to_eat)
-
-        # Death or reproduction
+            
         if False:
             self.model.grid._remove_agent(self.pos, self)
-            self.model.schedule.remove(self)
+           
         else:
-            if self.random.random() < self.model.wolf_reproduce:
+            if self.random.random() < 0.5:
                 # Create a new wolf cub
                 #self.energy /= 2
-                cub = ObserverAgent
-                (self.model.next_id(), self.pos, self.model,
-                           self.moore, self.energy)
-                self.model.grid.place_agent(cub, cub.pos)
-                self.model.schedule.add(cub)
+                pass
 
-
-class GrassPatch(Agent):
-    '''
-    A patch of grass that grows at a fixed rate and it is eaten by sheep
-    '''
-
-    def __init__(self, unique_id, pos, model, fully_grown, countdown):
+    def random_move(self):
         '''
-        Creates a new patch of grass
-
-        Args:
-            grown: (boolean) Whether the patch of grass is fully grown or not
-            countdown: Time for the patch of grass to be fully grown again
+        Step one cell in any allowable direction.
         '''
-        super().__init__(unique_id, model)
-        self.fully_grown = fully_grown
-        self.countdown = countdown
-        self.pos = pos
-
-    def step(self):
-        if not self.fully_grown:
-            if self.countdown <= 0:
-                # Set as fully grown
-                self.fully_grown = True
-                self.countdown = self.model.grass_regrowth_time
-            else:
-                self.countdown -= 1
+        # Pick the next cell from the adjacent cells.
+        next_moves = self.model.grid.get_neighborhood(self.pos, self.moore, True)
+        next_move = self.random.choice(next_moves)
+        # Now move:
+        self.model.grid.move_agent(self, next_move)
