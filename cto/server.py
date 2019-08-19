@@ -13,14 +13,12 @@ def cto_portrayal(agent):
     portrayal = {}
 
     if type(agent) is TargetAgent:
-        portrayal["Shape"] = "cto/resources/sheep.png"
-        # https://icons8.com/web-app/433/sheep
+        portrayal["Shape"] = "cto/resources/drone.png"
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 1
 
     elif type(agent) is ObserverAgent:
-        portrayal["Shape"] = "cto/resources/wolf.png"
-        # https://icons8.com/web-app/36821/German-Shepherd
+        portrayal["Shape"] = "cto/resources/observer.png"
         portrayal["scale"] = 0.9
         portrayal["Layer"] = 2
         portrayal["text"] = '1'
