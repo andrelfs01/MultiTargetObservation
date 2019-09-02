@@ -35,7 +35,7 @@ class Modelo(Model):
         self.target_speed = target_speed 
         self.multiplication_factor = 1.0/target_speed 
         self.sensor_range  = sensorRange # * self.multiplication_factor
-                
+        self.targets_observed = {}
         self.grid = MultiGrid(int(width), int(height), False)
         self.schedule = RandomActivation(self)
         self.observers_indications = []
@@ -90,6 +90,12 @@ class Modelo(Model):
                     self.observers_indications = self.kmeans_predicted_indications()
         self.schedule.step()
         print(self.schedule.get_agent_count)
+        
+        for a in self.grid.coord_iter():
+            agente, x, y = a
+            if len(agente.under_observation) > 0:
+                self.targets_observed.union(agente.under_observation)
+
         self.datacollector.collect(self)
 
     def kmeans_indications(self):

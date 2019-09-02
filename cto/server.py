@@ -1,5 +1,5 @@
 from mesa.visualization.ModularVisualization import ModularServer
-from mesa.visualization.modules import CanvasGrid, ChartModule
+from mesa.visualization.modules import CanvasGrid, ChartModule, TextElement
 from mesa.visualization.UserParam import UserSettableParameter
 
 from cto.agents import TargetAgent, ObserverAgent
@@ -39,7 +39,19 @@ def cto_portrayal(agent):
 
     return portrayal
 
+class UnderObservation(TextElement):
+    '''
+    Display a text count of how many under observation agents there are.
+    '''
 
+    def __init__(self):
+        pass
+
+    def render(self, model):
+        return "Observed agents: " + str(model.targets_observed)
+
+
+text_element = UnderObservation()
 canvas_element = CanvasGrid(cto_portrayal, 20, 20, 500, 500)
 chart_element = ChartModule([{"Label": "Wolves", "Color": "#AA0000"},
                              {"Label": "Sheep", "Color": "#666666"}])
@@ -63,5 +75,5 @@ model_params = {#"grass": UserSettableParameter('checkbox', 'Grass Enabled', Tru
                 "active_prediction": UserSettableParameter('checkbox', 'active_prediction', False),
                 "a": UserSettableParameter('slider', 'a', 0.01, 0.01, 2)}
 
-server = ModularServer(modelo, [canvas_element, chart_element], "Wolf Sheep Predation", model_params)
+server = ModularServer(modelo, [canvas_element, chart_element, text_element], "CTO", model_params)
 server.port = 8521

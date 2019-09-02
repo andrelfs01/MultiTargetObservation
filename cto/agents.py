@@ -12,14 +12,14 @@ class TargetAgent(Agent):
     '''
 
     energy = None
-    under_observation = []
+    under_observation = {}
     pos = (1,1)
     unique_id = 't_'
 
     def __init__(self, unique_id, pos, model, moore, energy=None):
         super().__init__(unique_id, model)
         self.energy = energy
-        self.under_observation = []
+        self.under_observation = {}
         self.unique_id = unique_id
         self.model = model
         self.moore = moore
@@ -51,7 +51,7 @@ class ObserverAgent(Agent):
     m.schedule = RandomActivation(m)
 
     energy = None
-    under_observation = []
+    under_observation = {}
     pos = (1,1)
     unique_id = 'o_'
     model = m
@@ -60,7 +60,7 @@ class ObserverAgent(Agent):
         super().__init__(unique_id, model)
         self.energy = energy
         self.pos = pos
-        self.under_observation = []
+        self.under_observation = {}
         self.unique_id = unique_id
         self.model = model
         self.moore = moore
