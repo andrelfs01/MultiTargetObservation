@@ -66,12 +66,12 @@ model_params = {#"grass": UserSettableParameter('checkbox', 'Grass Enabled', Tru
                 # "wolf_gain_from_food": UserSettableParameter('slider', 'Wolf Gain From Food Rate', 20, 1, 50),
                 # "sheep_gain_from_food": UserSettableParameter('slider', 'Sheep Gain From Food', 4, 1, 10)
                 
-                "N": UserSettableParameter('slider', 'N', 1, 1, 30),
-                "O": UserSettableParameter('slider', 'O', 1, 1, 96),
+                "N": UserSettableParameter('slider', 'N', 1, 1, 40),
+                "O": UserSettableParameter('slider', 'O', 1, 1, 15),
                 "sensorRange": UserSettableParameter('slider', 'sensorRange', 5, 5, 25),
                 "target_speed": UserSettableParameter('slider', 'target_speed', 0.1, 0.1, 2),
                 "active_prediction": UserSettableParameter('checkbox', 'active_prediction', False),
                 "a": UserSettableParameter('slider', 'a', 0.01, 0.01, 2)}
 
-server = ModularServer(modelo, [canvas_element, chart_element, text_element], "CTO", model_params)
+server = ModularServer(modelo, [canvas_element, text_element], "CTO", model_params)
 server.port = 8521
